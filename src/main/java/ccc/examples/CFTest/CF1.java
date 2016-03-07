@@ -3,13 +3,18 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.cf.taste.hadoop.item.RecommenderJob;
 
 public class CF1 {
-	private static final String HDFS = "hdfs://192.168.32.10:9000";
+	private static final String HDFS = "hdfs://202.113.127.209:9000";
 	public static void main(String[] args) throws Exception {
-        String inPath = HDFS + "/CFtest/input/CF1";
-        String inFile = inPath + "";
-        String outPath = HDFS + "/CFtest/output";
-        String outFile = outPath + "/part-r-00000";
-        String tmpPath = HDFS + "/tmp/" + System.currentTimeMillis();
+		 String inPath = HDFS + "/CollaborativeFilter/test1/input";
+	    String inFile = inPath + "";	    
+	    String outPath = HDFS + "/CollaborativeFilter/test1/output-boolean";
+	    String outFile = outPath + "/part-r-00000";	    
+	    String tmpPath = HDFS + "/CollaborativeFilter/test1/tmp-boolean/";
+		/* String inPath = HDFS + "/CollaborativeFilter/valuePref/output";
+	    String inFile = inPath + "";	    
+	    String outPath = HDFS + "/CollaborativeFilter/test2/output";
+	    String outFile = outPath + "/part-r-00000";	    
+	    String tmpPath = HDFS + "/CollaborativeFilter/test2/tmp/";*/
 
         //Configuration conf = new Configuration();
 
@@ -18,7 +23,7 @@ public class CF1 {
         sb.append("--input ").append(inPath);
         sb.append(" --output ").append(outPath);
         sb.append(" --booleanData true");
-        sb.append(" --similarityClassname org.apache.mahout.math.hadoop.similarity.cooccurrence.measures.EuclideanDistanceSimilarity");
+        sb.append(" --similarityClassname org.apache.mahout.math.hadoop.similarity.cooccurrence.measures.CosineSimilarity");
         sb.append(" --tempDir ").append(tmpPath);
         args = sb.toString().split(" ");
 
