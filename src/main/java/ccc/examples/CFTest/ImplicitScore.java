@@ -52,7 +52,6 @@ public class ImplicitScore {
 				Job job = new Job(conf, "test");
 				job.setJarByClass(ImplicitScore.class);
 				job.setMapperClass(TMapper_2.class);
-				//job.setCombinerClass(IntSumReducer.class);
 				job.setReducerClass(TReducer.class);
 				job.setOutputKeyClass(Text.class);
 				job.setOutputValueClass(DoubleWritable.class);
@@ -124,6 +123,7 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 
 
 	private MultipleOutputs<Text, DoubleWritable> output;
+	private static int  ceiling=10;
 	
 	@Override
 	protected void setup(Context context)
@@ -149,6 +149,8 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 			sum += val.get();
 			count++;
 		}
+		if(sum>ceiling)
+			sum=ceiling;
 		output.write(key, new DoubleWritable(sum/*/count*/),ImplicitScore.output+"/"+ImplicitScore.testName);
 		/*for(DoubleWritable val:values){
 			context.write(key,val);
@@ -193,8 +195,12 @@ class TMapper_2 extends Mapper<Object, Text,Text,DoubleWritable>{
 					if(q>=0.1){
 						
 						//Float pref=(float) (Math.log(ti)/Math.log(30)*q);
-						
-						Float pref=(float) (Math.log(ti)/Math.log(30)*q*Math.cos(q*3.14)*Math.cos(q*3.14));
+						Float pref=0f;
+						Float Cr=(float)(Math.log(ti)/Math.log(30));
+						if(q<0.5)
+							pref=(float) (Cr*q*(Math.cos(q*12.56)/4+0.75));
+						else
+							pref=(float) (Cr*q);
 						
 						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
 						
