@@ -49,6 +49,7 @@ public class ImplicitScore {
 				
 				
 				testName=Uid;
+				//TMapper_2.total=0;
 				Job job = new Job(conf, "test");
 				job.setJarByClass(ImplicitScore.class);
 				job.setMapperClass(TMapper_2.class);
@@ -77,8 +78,7 @@ public class ImplicitScore {
 	}
 }
 
-class TMapper extends Mapper<Object, Text,Text,DoubleWritable>{
-
+/*class TMapper extends Mapper<Object, Text,Text,DoubleWritable>{
 
 	@Override
 	protected void map(Object key, Text value, Context context)
@@ -117,7 +117,7 @@ class TMapper extends Mapper<Object, Text,Text,DoubleWritable>{
 		
 	}
 		
-}
+}*/
 	
 class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 
@@ -151,7 +151,12 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 		}
 		if(sum>ceiling)
 			sum=ceiling;
+		
+		//sum/=TMapper_2.total;
 		output.write(key, new DoubleWritable(sum/*/count*/),ImplicitScore.output+"/"+ImplicitScore.testName);
+		
+		
+		
 		/*for(DoubleWritable val:values){
 			context.write(key,val);
 		}*/
@@ -168,7 +173,7 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 
 class TMapper_2 extends Mapper<Object, Text,Text,DoubleWritable>{
 
-
+	//public static double total;
 	@Override
 	protected void map(Object key, Text value, Context context)
 			throws IOException, InterruptedException {
@@ -202,6 +207,7 @@ class TMapper_2 extends Mapper<Object, Text,Text,DoubleWritable>{
 						else
 							pref=(float) (Cr*q);
 						
+						//total+=pref;
 						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
 						
 					}

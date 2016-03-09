@@ -36,42 +36,50 @@ public class ScoreRegulation {
 		
 		try {
 			FileSystem hdfs=srcPath.getFileSystem(conf);
-			InputStream in=hdfs.open(srcPath);
-			OutputStream out=hdfs.create(dstPath);
+			InputStream in1=hdfs.open(srcPath);
+			//OutputStream out=hdfs.create(dstPath);
 			double sum=0,score=0;
 			int n=0;
 			
 			
-			BufferedReader reader=new BufferedReader(new InputStreamReader(in));
-			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
-			reader.mark(1000);
+			BufferedReader reader1=new BufferedReader(new InputStreamReader(in1));
+			
+			//reader1.mark(1000);
 			String line="";
-			while((line=reader.readLine())!=null){
+			while((line=reader1.readLine())!=null){
 				sum+=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
 				n++;
 			}
 			
-			reader.reset();
+			reader1.close();
+			in1.close();
 			//reader=new BufferedReader(new InputStreamReader(in));
 			
 			
+			
+			InputStream in2=hdfs.open(srcPath);
+			OutputStream out=hdfs.create(dstPath);
+
+			BufferedReader reader2=new BufferedReader(new InputStreamReader(in2));
+			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
+			
 			line="";
-			while((line=reader.readLine())!=null){
+			while((line=reader2.readLine())!=null){
 				score=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
 				line=line.substring(0,line.lastIndexOf(',')+1);
 				score/=(sum/n);
-				line+=(score/1+score)*ceiling;
+				line+=score/(1+score)*ceiling;
 				writer.write(line);
 				writer.newLine();
 			}
-			reader.close();
-			in.close();
+			reader2.close();
+			in1.close();
 			writer.close();
 			out.close();
 			
 		}
 		catch (IOException e) {
-			
+			e.printStackTrace();;
 		}
 	}
 }
