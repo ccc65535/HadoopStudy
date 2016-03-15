@@ -9,7 +9,7 @@ import org.apache.hadoop.fs.*;
 public class HDFSProcess {
 	
 	//public static String HDFS="hdfs://202.113.127.209:9000/";
-	public static String HDFS="hdfs://10.1.15.160:9000/";
+	public static String HDFS="hdfs://192.168.32.10:9000/";
 	
 	
 	
@@ -44,8 +44,8 @@ public class HDFSProcess {
 	}
 	
 	public static void main(String args[]){
-		String dest=HDFS+"CollaborativeFilter/valuePref/input";
-		String src="/home/Hadoop/data/12月数据/newdata";
+		String dest=HDFS+"RecommendSystem/valuePref/input";
+		String src="/project/newdata";
 		Configuration conf=new Configuration();
 		Path path=new Path(src);
 	
@@ -60,7 +60,7 @@ public class HDFSProcess {
 			//fs.isFile()
 			if(fs.isDirectory()){
 				File [] files=fs.listFiles();
-				for(int i=0;i<300;i++){
+				for(int i=0;i<files.length;i++){
 					put2HDfS(src+"/"+files[i].getName(),dest+"/"+files[i].getName(),conf);
 				}
 			}

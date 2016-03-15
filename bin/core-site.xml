@@ -19,12 +19,12 @@
 <configuration>
 <property>
 	<name>fs.defaultFS</name>
-		<value>hdfs://10.1.15.160:9000</value>
+		<value>hdfs://192.168.32.10:9000</value>
 		<final>true</final>
 	</property>
 	<property>
 		<name>hadoop.tmp.dir</name>
-		<value>/program/hadoop-2.4.1/temp</value>
+		<value>/program/hadoop-2.4.1/tmp</value>
 	</property>
 	<property>
 		<name>io.file.buffer.size</name>

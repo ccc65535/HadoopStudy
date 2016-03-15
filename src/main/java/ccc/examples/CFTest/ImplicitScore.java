@@ -23,7 +23,7 @@ public class ImplicitScore {
 	
 	public static String testName="testName";
 	//public static String HDFS="hdfs://202.113.127.209:9000/CollaborativeFilter/";
-	public static String HDFS="hdfs://10.1.15.160:9000/CollaborativeFilter/";
+	public static String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
 	public static String input,output;
 	
 	public static void main(String args[]) throws Exception{
@@ -35,9 +35,9 @@ public class ImplicitScore {
 		//String output="/home/Hadoop/data/result";
 		
 		//String input=HDFS+"testInput/0220000011";
-		input="/CollaborativeFilter/valuePref/input";
-		output="/CollaborativeFilter/valuePref/output";
-		String status="/CollaborativeFilter/valuePref/outStatus";
+		input=HDFS+"/valuePref/input";
+		output=HDFS+"/valuePref/output";
+		String status=HDFS+"/valuePref/outStatus";
 		
 		Path path=new Path(input);
 		FileSystem fs=FileSystem.get(conf);

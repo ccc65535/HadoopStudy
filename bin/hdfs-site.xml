@@ -19,7 +19,7 @@
 <configuration>
  	<property>
 		<name>dfs.namenode.secondary.http-address</name>
-		<value>10.1.15.160:50090</value>
+		<value>192.168.32.10:50090</value>
    	</property>
   	<property>
 		<name>dfs.namenode.name.dir</name>
