@@ -1,4 +1,4 @@
-package ccc.examples.CFTest;
+package HDFS;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package ccc.examples.CFTest;
+package figured;
 
 import java.io.IOException;
 import java.util.StringTokenizer;

@@ -1,4 +1,4 @@
-package ccc.examples.CFTest;
+package ImpScore;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -24,7 +24,7 @@ public class ImplicitScore {
 	public static String testName="testName";
 	//public static String HDFS="hdfs://202.113.127.209:9000/CollaborativeFilter/";
 	public static String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
-	public static String input,output;
+	public static String input,output,status;
 	
 	public static void main(String args[]) throws Exception{
 		Configuration conf = new Configuration();
@@ -35,13 +35,18 @@ public class ImplicitScore {
 		//String output="/home/Hadoop/data/result";
 		
 		//String input=HDFS+"testInput/0220000011";
-		input=HDFS+"/valuePref/input";
-		output=HDFS+"/valuePref/output";
-		String status=HDFS+"/valuePref/outStatus";
+		input=HDFS+"/valuePref/input/";
+		output=HDFS+"/valuePref-new2/output-noceiling";
+		status=HDFS+"/valuePref-new2/outStatus";
 		
 		Path path=new Path(input);
 		FileSystem fs=FileSystem.get(conf);
-		FileStatus[] stats = fs.listStatus(path);     
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
 		for(int i = 0; i < stats.length; ++i){
 			if (stats[i].isDirectory()){
 				String directory=stats[i].getPath().toString();
@@ -58,15 +63,12 @@ public class ImplicitScore {
 				job.setOutputValueClass(DoubleWritable.class);
 				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
 				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
-				/*if(fs.isDirectory(new Path(status))){
-					fs.delete(new Path(status), true);
-				}*/
 				job.waitForCompletion(true);
 			}  
 		}
 		fs.close();
 		/*Job job = new Job(conf, "test");
-		job.setJarByClass(MPTest.class);
+		job.setJarByClass(ImplicitScore.class);
 		job.setMapperClass(TMapper_2.class);
 		//job.setCombinerClass(IntSumReducer.class);
 		job.setReducerClass(TReducer.class);
@@ -123,7 +125,7 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 
 
 	private MultipleOutputs<Text, DoubleWritable> output;
-	private static int  ceiling=10;
+	private static int  ceiling=5;
 	
 	@Override
 	protected void setup(Context context)
@@ -149,8 +151,8 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 			sum += val.get();
 			count++;
 		}
-		if(sum>ceiling)
-			sum=ceiling;
+		/*if(sum>ceiling)
+			sum=ceiling;*/
 		
 		//sum/=TMapper_2.total;
 		output.write(key, new DoubleWritable(sum/*/count*/),ImplicitScore.output+"/"+ImplicitScore.testName);
@@ -190,25 +192,27 @@ class TMapper_2 extends Mapper<Object, Text,Text,DoubleWritable>{
 				}
 			
 				if(Iid.length()>19)
-					Iid=Iid.substring(Iid.length()-19, Iid.length());
+					Iid=Iid.substring(Iid.length()-10, Iid.length());
 				
 				//筛选数据
-				if(!type.equals("0")&&Iid!=null&&!Iid.equals("00000")&&contents.length>6&&isNumeric(Iid)){
+				if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&isNumeric(Iid)){
 					String time_item=contents[6],time_watched=contents[7];
-					//tw观看时长,ti节目时长,q观看质量
-					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
-					if(q>=0.1){
-						
-						//Float pref=(float) (Math.log(ti)/Math.log(30)*q);
-						Float pref=0f;
-						Float Cr=(float)(Math.log(ti)/Math.log(30));
-						if(q<0.5)
-							pref=(float) (Cr*q*(Math.cos(q*12.56)/4+0.75));
-						else
-							pref=(float) (Cr*q);
-						
-						//total+=pref;
-						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+					if(isNumeric(time_item)&&isNumeric(time_watched)){
+						//tw观看时长,ti节目时长,q观看质量
+						float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+						if(q>=0.1){
+							
+							Float pref=(float) (Math.log(ti)/Math.log(30)*q*(Math.cos(q*6.28)/4+0.75));
+							/*Float pref=0f;
+							Float Cr=(float)(Math.log(ti)/Math.log(30));
+							if(q<0.5)
+								pref=(float) (Cr*q*(Math.cos(q*12.56)/4+0.75));
+							else
+								pref=(float) (Cr*q);*/
+							
+							//total+=pref;
+							context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+						}
 						
 					}
 					//context.write(new Text(contents[6]), new DoubleWritable(1));
