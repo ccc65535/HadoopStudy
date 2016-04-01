@@ -93,7 +93,7 @@ public class ScoreRegulation {
 	}
 
 	///
-	///同一用户评分正则，设置上限
+	///同一用户评分标准化，设置上限
 	///
 	public static void Combine(Configuration conf) throws IOException{
 		
@@ -153,7 +153,7 @@ public class ScoreRegulation {
 	}
 	
 	///
-	///同一用户的评分之间无正则,设置上限
+	///同一用户的评分之间无标准化,设置上限
 	///
 	public static void Combine1(Configuration conf) throws IOException{
 		
@@ -198,7 +198,7 @@ public class ScoreRegulation {
 	}
 	
 	///
-		///归一化评分
+		///标准化化评分
 		///
 		public static void Combine2(Configuration conf) throws IOException{
 			

@@ -1,4 +1,4 @@
-package ccc.examples.CFTest;
+package CollaborativeFilter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.cf.taste.hadoop.item.RecommenderJob;
 
