@@ -21,31 +21,32 @@ public class DataPrepare {
 		
 		
 		try {
-			/*ImplicitScore.input="hdfs://192.168.32.10:9000/RecommendSystem/valuePref/input/";
+			/*隐式评分
+			 * ImplicitScore.input="hdfs://192.168.32.10:9000/RecommendSystem/valuePref/input/";
 			ImplicitScore.output=HDFS+"/Preprocess/ImpScore/scores";
 			ImplicitScore.status=HDFS+"/Preprocess/ImpScore/outStatus";
 			ImplicitScore.doScore(conf);*/
 			
 			
-			for(int i=10;i<=100;i+=10){
-				ScoreRegulation.rootPath=HDFS+"/Preprocess/ImpScore/scores/";
+			for(int i=200;i<=1000;i+=200){
+				/*ScoreRegulation.rootPath=HDFS+"/Preprocess/ImpScore/scores/";
 				ScoreRegulation.outPath=HDFS+"/Preprocess/ImpScore/"+i+"/result-standard";
 				ScoreRegulation.outPath1=HDFS+"/Preprocess/ImpScore/"+i+"/result-nstandard";
 				ScoreRegulation.outPath2=HDFS+"/Preprocess/ImpScore/"+i+"/result-ones";
-				ScoreRegulation.Combine(conf,i);
-				ScoreRegulation.Combine1(conf,i);
-				ScoreRegulation.Combine2(conf,i);
-				
+				ScoreRegulation.Combine(conf,i);	//标准化评分
+				//ScoreRegulation.Combine1(conf,i);	//未标准化评分
+				ScoreRegulation.Combine2(conf,i);	//0-1评分
+*/				
 				RandomDivide div=new RandomDivide();
 				div.setScale(0.1);
 				div.setInPath(HDFS+"/Preprocess/ImpScore/"+i+"/result-standard");
-				div.setTrainSetPath(HDFS+"/data/scale-"+i+"/result-standard/trainSet.txt");
-				div.setExamplePath(HDFS+"/data/scale-"+i+"/result-standard/example.txt");
+				div.setTrainSetPath(HDFS+"/CollaborativeFilter/a/scale-"+i+"/trainSet-std");
+				div.setExamplePath(HDFS+"/CollaborativeFilter/a/scale-"+i+"/example-std");
 				div.divideHDFS(conf);
 				
 				div.setInPath(HDFS+"/Preprocess/ImpScore/"+i+"/result-ones");
-				div.setTrainSetPath(HDFS+"/data/scale-"+i+"/result-ones/trainSet.txt");
-				div.setExamplePath(HDFS+"/data/scale-"+i+"/result-ones/example.txt");
+				div.setTrainSetPath(HDFS+"/CollaborativeFilter/a/scale-"+i+"/trainSet-one");
+				div.setExamplePath(HDFS+"/CollaborativeFilter/a/scale-"+i+"/example-one");
 				div.divideHDFS(conf);
 			}
 			

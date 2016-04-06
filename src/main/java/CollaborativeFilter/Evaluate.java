@@ -2,16 +2,26 @@ package CollaborativeFilter;
 import java.io.*;
 import java.util.*;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+
 
 public class Evaluate {
-	private String resultPath,examplePath;
+	private String resultPath,examplePath,outPath;
 	public List<Pref> result=new ArrayList<Pref>();
 	public List<Pref> example=new ArrayList<Pref>();
-
+	
+	
+	public String getOutPath() {
+		return outPath;
+	}
+	public void setOutPath(String outPath) {
+		this.outPath = outPath;
+	}
+	
 	public String getResultPath() {
 		return resultPath;
 	}
-
 	public void setResultPath(String resultPath) {
 		this.resultPath = resultPath;
 	}
@@ -19,7 +29,6 @@ public class Evaluate {
 	public String getExamplePath() {
 		return examplePath;
 	}
-
 	public void setExamplePath(String examplePath) {
 		this.examplePath = examplePath;
 	}
@@ -46,7 +55,38 @@ public class Evaluate {
 		}
 		exampleFile.close();
 	}
-	
+
+	public void generateDataHDFS(Configuration conf) throws Exception{
+		
+		Path res=new Path(resultPath);
+		Path examp=new Path(examplePath);
+		org.apache.hadoop.fs.FileSystem hdfs=res.getFileSystem(conf);
+		
+		InputStream resPath=hdfs.open(res);
+		InputStream exampPath=hdfs.open(examp);
+
+		
+		BufferedReader resultFile=new BufferedReader(new InputStreamReader(resPath));
+		BufferedReader exampleFile=new BufferedReader(new InputStreamReader(exampPath));
+		String line;
+		while((line=resultFile.readLine())!=null){
+			Pref p=new Pref();
+			p.uID=line.split(",")[0];
+			p.iID=line.split(",")[1];
+			p.score=line.split(",")[2];
+			result.add(p);
+		}
+		resultFile.close();
+		
+		while((line=exampleFile.readLine())!=null){
+			Pref p=new Pref();
+			p.uID=line.split(",")[0];
+			p.iID=line.split(",")[1];
+			p.score=line.split(",")[2];
+			example.add(p);
+		}
+		exampleFile.close();
+	}
 	
 	public void eval(BufferedWriter out) throws Exception{
 		int rn,en,correct=0;
@@ -128,6 +168,78 @@ public class Evaluate {
 		out.write("Precision:"+precision+" ,Recall:"+recall+" ,MSE:"+MSE);
 		out.newLine();
 		
+		
+	}
+	
+	
+	
+	public void evalHDFS(Configuration conf) throws Exception{
+		Path in=new Path(resultPath);
+		Path out=new Path(outPath);
+		org.apache.hadoop.fs.FileSystem hdfs=in.getFileSystem(conf);
+		
+		//InputStream in1=hdfs.open(in);
+		OutputStream out1=hdfs.create(out);
+		BufferedWriter outFile=new BufferedWriter(new OutputStreamWriter(out1));
+		
+		
+		
+		int rn,en,correct=0;
+		double precision,recall;
+		boolean contains=false;
+		List<Double> diffs=new ArrayList<Double>();
+		Double MSE=(double) 0;
+		List<Pref>res=new ArrayList<Pref>(result);
+		List<Pref>exp=new ArrayList<Pref>(example);
+		rn=res.size();
+		en=exp.size();
+		
+		Pref p=new Pref();
+		Pref q=new Pref();
+		for(int i=0;i<rn;i++){
+			p=res.get(i);
+			for(int j=0;j<exp.size();){
+				q=exp.get(j);
+				if(Long.parseLong(p.uID)==Long.parseLong(q.uID)&&Long.parseLong(p.iID)==Long.parseLong(q.iID)){
+					correct++;
+					
+					diffs.add(Double.parseDouble(p.score)-Double.parseDouble(q.score));
+					exp.remove(j);
+					contains=true;
+				}
+				else
+					j++;
+			}
+			if(!contains){
+				if(!p.score.equals("NaN"))
+					diffs.add(Double.parseDouble(p.score));
+			}
+		}
+		
+		if(!exp.isEmpty()){
+			for(int j=0;j<exp.size();j++){		
+				if(!exp.get(j).score.equals("NaN"))
+					diffs.add(Double.parseDouble(exp.get(j).score));
+			}
+		}
+		
+		if(!diffs.isEmpty()){
+			int n=diffs.size();
+			for(int j=0;j<n;j++){
+				if(diffs.get(j)!=Double.NaN)
+					MSE+=(diffs.get(j)*diffs.get(j))/n;
+			}
+		}
+		
+		precision=(double)correct/rn;
+		recall=(double)correct/en;
+		
+		System.out.println("Precision:"+precision);
+		System.out.println("Recall:"+recall);
+		System.out.println("MSE:"+MSE);
+		outFile.write("Precision:"+precision+" ,Recall:"+recall+" ,MSE:"+MSE);
+		outFile.newLine();
+		outFile.close();
 		
 	}
 	
@@ -255,17 +367,34 @@ public class Evaluate {
 	
 	public static void main(String args[]){
 		try {
-			Evaluate val=new Evaluate();
-			//val.resultPath="E:\\RATE\\formal1\\result-fm.txt";
-			//val.examplePath="E:\\RATE\\formal1\\example.txt";	
+			/*Evaluate val=new Evaluate();
+
 			val.resultPath="/project/data/cluster/final";
-			val.examplePath="/project/data/cluster/example.txt";	
+			val.examplePath="/project/data/cluster/example.txt";
+			val.outPath="/project/data/cluster/eval";
 			val.generateData();
 			val.toString();
 			
-			BufferedWriter out=new BufferedWriter(new FileWriter("/project/data/cluster/eval"));
+			BufferedWriter out=new BufferedWriter(new FileWriter(val.outPath));
 			
-			val.eval1(out);
+			val.eval1(out);*/
+			
+			
+			
+			Evaluate val=new Evaluate();
+			String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
+			Configuration conf=new Configuration();
+			conf.addResource(new Path("./bin/core-site.xml"));
+			conf.addResource(new Path("./bin/hdfs-site.xml"));
+			
+			val.resultPath=HDFS+"/CF/final";
+			val.examplePath=HDFS+"/CF/example.txt";
+			val.outPath=HDFS+"/CF/eval";
+			val.generateDataHDFS(conf);
+			val.evalHDFS(conf);
+			
+			
+			
 			
 			/*List<Pref> userResult=new ArrayList<Pref>();
 			List<Pref> userExample=new ArrayList<Pref>();
@@ -308,7 +437,7 @@ public class Evaluate {
 				}
 					
 			}*/
-			out.close();
+			//out.close();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
