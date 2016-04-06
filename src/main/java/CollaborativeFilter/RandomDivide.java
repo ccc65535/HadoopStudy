@@ -2,6 +2,9 @@ package CollaborativeFilter;
 import java.io.*;
 import java.util.*;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+
 
 public class RandomDivide {
 	private double scale;		//分割比例
@@ -85,12 +88,81 @@ public class RandomDivide {
 		
 	}
 	
-	public void divide1() throws Exception{//用着个分割
+	public void divide1() throws Exception{//本地文件用这个分割
 		int scaleSize,count=0,linePointer=0;
 		int []nums;
 		BufferedReader inFile=new BufferedReader(new FileReader(inPath));
 		BufferedWriter tranFile=new BufferedWriter(new FileWriter(trainSetPath));
 		BufferedWriter exampleFile=new BufferedWriter(new FileWriter(examplePath));
+		
+		List<String> lines=new ArrayList<String>();
+		String line;
+		while((line=inFile.readLine())!=null){
+			count++;
+			lines.add(line);
+		}
+		inFile.close();
+		
+		scaleSize=(int)(count*scale);
+		nums=new int[scaleSize];
+		
+		for(int k=0;k<scaleSize;k++){
+			nums[k]=(int)(Math.random()*count);
+		}
+		sort(nums);
+		
+		
+		
+		List<String> tempLine=new ArrayList<String>();
+		for(int i=0;i<nums.length;i++){
+			tempLine.add(lines.remove(nums[i]%lines.size()));
+		}
+		
+		tempLine.sort(new Comparator<String>(){
+			public int compare(String a,String b){
+				long au=Long.parseLong(a.split(",")[0].trim());
+				long bu=Long.parseLong(b.split(",")[0].trim());
+				if(au>bu)
+					return 1;
+				else if(au<bu)
+					return -1;
+				else
+					return 0;
+			}
+		});
+		
+		
+		
+		for(int i=0;i<tempLine.size();i++){
+			exampleFile.write(tempLine.get(i));
+			exampleFile.newLine();
+		}
+		for(int i=0;i<lines.size();i++){
+			tranFile.write(lines.get(i));
+			tranFile.newLine();
+		}
+		
+		tranFile.close();
+		exampleFile.close();
+		
+	}
+	
+	public void divideHDFS(Configuration conf) throws Exception{//HDFS文件用这个分割
+		int scaleSize,count=0,linePointer=0;
+		int []nums;
+		
+		Path srcPath=new Path(inPath);
+		Path outPath1=new Path(trainSetPath);
+		Path outPath2=new Path(examplePath);
+		
+		org.apache.hadoop.fs.FileSystem hdfs=srcPath.getFileSystem(conf);
+		InputStream in1=hdfs.open(srcPath);
+		OutputStream trainSet=hdfs.create(outPath1);
+		OutputStream example=hdfs.create(outPath2);
+		
+		BufferedReader inFile=new BufferedReader(new InputStreamReader(in1));
+		BufferedWriter tranFile=new BufferedWriter(new OutputStreamWriter(trainSet));
+		BufferedWriter exampleFile=new BufferedWriter(new OutputStreamWriter(example));
 		
 		List<String> lines=new ArrayList<String>();
 		String line;
@@ -170,7 +242,7 @@ public class RandomDivide {
 		
 		/*try{
 			//File preFile=new File("E:\\RATE\\formal1\\RateData.txt");
-			//File resFile=new File("E:\\RATE\\formal1\\��ʽ����.txt");
+			//File resFile=new File("E:\\RATE\\formal1\\result.txt");
 			File preFile=new File("/project/data/one/result-alpha");
 			File resFile=new File("/project/data/one/");
 			BufferedReader in=new BufferedReader(new FileReader(preFile));
@@ -210,10 +282,18 @@ public class RandomDivide {
 		try {
 			RandomDivide rd=new RandomDivide();
 			rd.scale=0.1;
-			rd.inPath="/project/data/nzz/result-alpha-1";
+			/*rd.inPath="/project/data/nzz/result-alpha-1";
 			rd.trainSetPath="/project/data/nzz/trainSet-1.txt";
 			rd.examplePath="/project/data/nzz/example.txt";
-			rd.divide1();
+			rd.divide1();*/
+			String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
+			rd.inPath=HDFS+"/valuePref-new2/result-alpha";
+			rd.trainSetPath=HDFS+"/trainSet.txt";
+			rd.examplePath=HDFS+"/example.txt";
+			Configuration conf=new Configuration();
+			conf.addResource(new Path("./bin/core-site.xml"));
+			conf.addResource(new Path("./bin/hdfs-site.xml"));
+			rd.divideHDFS(conf);
 			
 			
 		} catch (Exception e) {

@@ -78,6 +78,38 @@ public class ImplicitScore {
 		FileOutputFormat.setOutputPath(job, new Path(output));
 		System.exit(job.waitForCompletion(true) ? 0 : 1);*/
 	}
+	
+	public static void doScore(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_2.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
+	}
+	
 }
 
 /*class TMapper extends Mapper<Object, Text,Text,DoubleWritable>{

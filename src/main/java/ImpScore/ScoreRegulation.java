@@ -9,17 +9,23 @@ import org.apache.hadoop.fs.Path;
 
 public class ScoreRegulation {
 	//public static String HDFS="hdfs://192.168.32.10:9000";
-	public static String rootPath="/RecommendSystem/valuePref-new2/output-noceiling/";
+	public static String rootPath;
 	//public static String outPath="/RecommendSystem/valuePref/output-regulation/";
-	public static String outPath="/RecommendSystem/valuePref-new2/result-alpha";
-	public static String outPath1="/RecommendSystem/valuePref-new2/result-alpha-1";
-	public static String outPath2="/RecommendSystem/valuePref-new2/result-alpha-2";
+	public static String outPath;
+	public static String outPath1;
+	public static String outPath2;
 	private static int  ceiling=5;
 	
 	public static void main(String args[]) throws Exception{
 		Configuration conf=new Configuration();
 		conf.addResource(new Path("./bin/core-site.xml"));
 		conf.addResource(new Path("./bin/hdfs-site.xml"));
+		
+		rootPath="/RecommendSystem/valuePref-new2/output-noceiling/";
+		//public static String outPath="/RecommendSystem/valuePref/output-regulation/";
+		outPath="/RecommendSystem/valuePref-new3/result-alpha";
+		outPath1="/RecommendSystem/valuePref-new3/result-alpha-1";
+		outPath2="/RecommendSystem/valuePref-new3/result-alpha-2";
 		/*Path path=new Path(rootPath);
 		
 
@@ -30,9 +36,9 @@ public class ScoreRegulation {
 			String Uid=directory.substring(directory.lastIndexOf('/')+1);
 			Regulation(Uid,conf);
 		}*/
-		Combine(conf);
-		Combine1(conf);
-		Combine2(conf);
+		Combine(conf,10);
+		Combine1(conf,10);
+		Combine2(conf,10);
 	}
 	
 	public static void Regulation(String Uid,Configuration conf){
@@ -95,7 +101,10 @@ public class ScoreRegulation {
 	///
 	///同一用户评分标准化，设置上限
 	///
-	public static void Combine(Configuration conf) throws IOException{
+	public static void Combine(Configuration conf,int size) throws IOException{
+		
+		
+		
 		
 		Path path=new Path(rootPath);
 		String output=outPath;
@@ -105,9 +114,19 @@ public class ScoreRegulation {
 		FileStatus[] stats = fs.listStatus(path);   		
 		OutputStream out=fs.create(dstPath);
 		
+		int numUser;
+		if(size<=stats.length)
+			numUser=size;
+		else if(size==0)
+			numUser=stats.length;
+		else{
+			System.out.println("size out of amount of the users.");
+			return;
+		}
+		
 		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
 		
-		for(int i = 0; i < stats.length; ++i){
+		for(int i = 0; i < numUser; ++i){
 			String directory=stats[i].getPath().toString();
 			String Uid=directory.substring(directory.lastIndexOf('/')+1);
 					
@@ -116,14 +135,14 @@ public class ScoreRegulation {
 			
 			String line="";
 			double sum=0,score=0;
-			int n=0;
+			int numPrefs=0;
 			
 			InputStream in1=fs.open(srcPath);
 			BufferedReader reader1=new BufferedReader(new InputStreamReader(in1));
 			
 			while((line=reader1.readLine())!=null){
 				sum+=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
-				n++;
+				numPrefs++;
 			}	
 			reader1.close();
 			in1.close();
@@ -135,7 +154,7 @@ public class ScoreRegulation {
 			while((line=reader2.readLine())!=null){
 				score=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
 				line=line.substring(0,line.lastIndexOf(',')+1);
-				score/=(sum/n/2);
+				score/=(sum/numPrefs/2);
 				score=(score>ceiling?ceiling:score);
 				//int s=(int)(score+0.5);
 				//if(s!=0){
@@ -155,7 +174,7 @@ public class ScoreRegulation {
 	///
 	///同一用户的评分之间无标准化,设置上限
 	///
-	public static void Combine1(Configuration conf) throws IOException{
+	public static void Combine1(Configuration conf,int size) throws IOException{
 		
 		Path path=new Path(rootPath);
 		String output=outPath1;
@@ -167,7 +186,17 @@ public class ScoreRegulation {
 		
 		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
 		
-		for(int i = 0; i < stats.length; ++i){
+		int numUser;
+		if(size<=stats.length)
+			numUser=size;
+		else if(size==0)
+			numUser=stats.length;
+		else{
+			System.out.println("size out of amount of the users.");
+			return;
+		}
+		
+		for(int i = 0; i < numUser; ++i){
 			String directory=stats[i].getPath().toString();
 			String Uid=directory.substring(directory.lastIndexOf('/')+1);
 					
@@ -200,7 +229,7 @@ public class ScoreRegulation {
 	///
 		///标准化化评分
 		///
-		public static void Combine2(Configuration conf) throws IOException{
+		public static void Combine2(Configuration conf,int size) throws IOException{
 			
 			Path path=new Path(rootPath);
 			String output=outPath2;
@@ -211,8 +240,17 @@ public class ScoreRegulation {
 			OutputStream out=fs.create(dstPath);
 			
 			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
+			int numUser;
+			if(size<=stats.length)
+				numUser=size;
+			else if(size==0)
+				numUser=stats.length;
+			else{
+				System.out.println("size out of amount of the users.");
+				return;
+			}
 			
-			for(int i = 0; i < stats.length; ++i){
+			for(int i = 0; i < numUser; ++i){
 				String directory=stats[i].getPath().toString();
 				String Uid=directory.substring(directory.lastIndexOf('/')+1);
 						
