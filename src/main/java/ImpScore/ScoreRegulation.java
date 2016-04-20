@@ -102,10 +102,7 @@ public class ScoreRegulation {
 	///同一用户评分标准化，设置上限
 	///
 	public static void Combine(Configuration conf,int size) throws IOException{
-		
-		
-		
-		
+	
 		Path path=new Path(rootPath);
 		String output=outPath;
 		Path dstPath=new Path(output);
@@ -227,7 +224,7 @@ public class ScoreRegulation {
 	}
 	
 	///
-		///标准化化评分
+		///评分无处里
 		///
 		public static void Combine2(Configuration conf,int size) throws IOException{
 			
@@ -262,10 +259,64 @@ public class ScoreRegulation {
 				BufferedReader reader2=new BufferedReader(new InputStreamReader(in2));
 				line="";
 				while((line=reader2.readLine())!=null){					
-					line=line.substring(0,line.lastIndexOf(',')+1);				
-					line+=ceiling;
+					//line=line.substring(0,line.lastIndexOf(',')+1);				
+					//line+=ceiling;
 					writer.write(line);
 					writer.newLine();
+
+					
+				}
+				reader2.close();
+				in2.close();
+			}
+			writer.close();
+			out.close();
+		}
+		
+		
+		public static void Combine3(Configuration conf,int size) throws IOException{
+			
+			Path path=new Path(rootPath);
+			String output=outPath2;
+			Path dstPath=new Path(output);
+			
+			FileSystem fs=FileSystem.get(conf);
+			FileStatus[] stats = fs.listStatus(path);   		
+			OutputStream out=fs.create(dstPath);
+			
+			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
+			
+			int numUser;
+			if(size<=stats.length)
+				numUser=size;
+			else if(size==0)
+				numUser=stats.length;
+			else{
+				System.out.println("size out of amount of the users.");
+				return;
+			}
+			
+			for(int i = 0; i < numUser; ++i){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+						
+				String input=rootPath+Uid;	
+				Path srcPath=new Path(input);
+				
+				String line="";
+				double score=0;
+
+				InputStream in2=fs.open(srcPath);
+				BufferedReader reader2=new BufferedReader(new InputStreamReader(in2));
+				line="";
+				while((line=reader2.readLine())!=null){
+						score=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
+					if(score>0.5){
+						line=line.substring(0,line.lastIndexOf(',')+1);
+						line+=score;
+						writer.write(line);
+						writer.newLine();
+					}
 
 					
 				}

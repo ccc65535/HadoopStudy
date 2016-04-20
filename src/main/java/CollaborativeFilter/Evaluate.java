@@ -79,6 +79,8 @@ public class Evaluate {
 		resultFile.close();
 		
 		while((line=exampleFile.readLine())!=null){
+			line.toString();
+			//System.out.println(line);
 			Pref p=new Pref();
 			p.uID=line.split(",")[0];
 			p.iID=line.split(",")[1];
@@ -445,6 +447,7 @@ public class Evaluate {
 		}
 
 	}
+	
 }
 
 

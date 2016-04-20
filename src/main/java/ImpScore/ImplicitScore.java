@@ -57,7 +57,7 @@ public class ImplicitScore {
 				//TMapper_2.total=0;
 				Job job = new Job(conf, "test");
 				job.setJarByClass(ImplicitScore.class);
-				job.setMapperClass(TMapper_2.class);
+				job.setMapperClass(TMapper_std.class);
 				job.setReducerClass(TReducer.class);
 				job.setOutputKeyClass(Text.class);
 				job.setOutputValueClass(DoubleWritable.class);
@@ -79,7 +79,7 @@ public class ImplicitScore {
 		System.exit(job.waitForCompletion(true) ? 0 : 1);*/
 	}
 	
-	public static void doScore(Configuration conf) throws Exception{
+	public static void doScore_std(Configuration conf) throws Exception{
 		Path path=new Path(input);
 		FileSystem fs=FileSystem.get(conf);
 		FileStatus[] stats = fs.listStatus(path);  
@@ -98,7 +98,7 @@ public class ImplicitScore {
 				//TMapper_2.total=0;
 				Job job = new Job(conf, "test");
 				job.setJarByClass(ImplicitScore.class);
-				job.setMapperClass(TMapper_2.class);
+				job.setMapperClass(TMapper_std.class);
 				job.setReducerClass(TReducer.class);
 				job.setOutputKeyClass(Text.class);
 				job.setOutputValueClass(DoubleWritable.class);
@@ -110,54 +110,206 @@ public class ImplicitScore {
 		fs.close();
 	}
 	
-}
-
-/*class TMapper extends Mapper<Object, Text,Text,DoubleWritable>{
-
-	@Override
-	protected void map(Object key, Text value, Context context)
-			throws IOException, InterruptedException {
-
+	public static void doScore_std_0(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
 		
-		//将value按行分割
-		String [] lines=value.toString().split("\n");
-		
-		for(int i=0;i<lines.length;i++){
-			
-			//有效行判断
-			if(lines[i].length()>10){
-				
-				//每行按分割符分割
-				String [] contents=lines[i].split("\t");
-				String date=contents[0];
-				String type=contents[1];
-				String Iid=contents[2];
-				//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
-				
-				
-				//筛选数据
-				if(!type.equals("0")&&Iid!=null&&!Iid.equals("00000")&&contents.length>6){
-					String time_item=contents[6],time_watched=contents[7];
-					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
-					if(q>=0.1){
-						Float pref=(float) (Math.log(ti)/Math.log(30)*q);
-						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
-						
-					}
-					//context.write(new Text(contents[6]), new DoubleWritable(1));
-				}
-			}
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
 		}
 		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_std_0.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
 	}
-		
-}*/
 	
+	
+	public static void doScore_origin(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_origin.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
+	}
+	
+	
+	public static void doScore_imp(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_imp.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
+	}
+	
+	public static void doScore_LR(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_LR.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
+	}
+	
+	public static void doScore_LR_2(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_LR_2.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
+	}
+	public static void doScore_LR_Line(Configuration conf) throws Exception{
+		Path path=new Path(input);
+		FileSystem fs=FileSystem.get(conf);
+		FileStatus[] stats = fs.listStatus(path);  
+		
+		if(fs.isDirectory(new Path(status))){
+			fs.delete(new Path(status), true);
+		}
+		
+		for(int i = 0; i < stats.length; ++i){
+			if (stats[i].isDirectory()){
+				String directory=stats[i].getPath().toString();
+				String Uid=directory.substring(directory.lastIndexOf('/')+1);
+				
+				
+				testName=Uid;
+				//TMapper_2.total=0;
+				Job job = new Job(conf, "test");
+				job.setJarByClass(ImplicitScore.class);
+				job.setMapperClass(TMapper_LR_line.class);
+				job.setReducerClass(TReducer.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(DoubleWritable.class);
+				FileInputFormat.addInputPath(job, new Path(input+"/"+Uid));
+				FileOutputFormat.setOutputPath(job, new Path(status+"/"+Uid));
+				job.waitForCompletion(true);
+			}  
+		}
+		fs.close();
+	}
+	
+	
+	static boolean isNumeric(String str){
+		Pattern pattern= Pattern.compile("[0-9]*");
+		return pattern.matcher(str).matches();
+	}
+}
+
+
+
 class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 
 
 	private MultipleOutputs<Text, DoubleWritable> output;
-	private static int  ceiling=5;
 	
 	@Override
 	protected void setup(Context context)
@@ -168,32 +320,13 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 	@Override
 	protected void reduce(Text key, Iterable<DoubleWritable> values,
 			Context context)
-			throws IOException, InterruptedException {
-		/*int count =	0;
-		while(value.iterator().hasNext()){
-			count++;
-			value.iterator().next();
-		}
-		//System.out.println(key.toString()+(new IntWritable(count)));
-		context.write(key, new IntWritable(count));*/
-		
+			throws IOException, InterruptedException {		
 		double sum = 0;
-		int count =	0;
 		for (DoubleWritable val : values) {
 			sum += val.get();
-			count++;
 		}
-		/*if(sum>ceiling)
-			sum=ceiling;*/
 		
-		//sum/=TMapper_2.total;
-		output.write(key, new DoubleWritable(sum/*/count*/),ImplicitScore.output+"/"+ImplicitScore.testName);
-		
-		
-		
-		/*for(DoubleWritable val:values){
-			context.write(key,val);
-		}*/
+		output.write(key, new DoubleWritable(sum),ImplicitScore.output+"/"+ImplicitScore.testName);
 	}
 	@Override
 	protected void cleanup(Context context)
@@ -205,56 +338,281 @@ class TReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable>{
 
 
 
-class TMapper_2 extends Mapper<Object, Text,Text,DoubleWritable>{
+class TMapper_std extends Mapper<Object, Text,Text,DoubleWritable>{
 
 	//public static double total;
 	@Override
 	protected void map(Object key, Text value, Context context)
 			throws IOException, InterruptedException {
-
-			String line=value.toString();
-			if(line.length()>10){
-				String [] contents=line.split("\t");
-				String date=contents[0];
-				String type=contents[1];
-				String Iid=contents[2];
-				//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
-				if(Iid.contains("_")){
-					Iid=Iid.substring(0,Iid.lastIndexOf("_"));
-				}
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
 			
-				if(Iid.length()>19)
-					Iid=Iid.substring(Iid.length()-10, Iid.length());
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
 				
-				//筛选数据
-				if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&isNumeric(Iid)){
-					String time_item=contents[6],time_watched=contents[7];
-					if(isNumeric(time_item)&&isNumeric(time_watched)){
-						//tw观看时长,ti节目时长,q观看质量
-						float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
-						if(q>=0.1){
-							
-							Float pref=(float) (Math.log(ti)/Math.log(30)*q*(Math.cos(q*6.28)/4+0.75));
-							/*Float pref=0f;
-							Float Cr=(float)(Math.log(ti)/Math.log(30));
-							if(q<0.5)
-								pref=(float) (Cr*q*(Math.cos(q*12.56)/4+0.75));
-							else
-								pref=(float) (Cr*q);*/
-							
-							//total+=pref;
-							context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
-						}
-						
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>=0.1){
+						Float pref=(float) (/*Math.log(ti)/Math.log(30)**/q*(Math.cos(q*6.28)/4+0.75));
+						/*Float pref=0f;
+						Float Cr=(float)(Math.log(ti)/Math.log(30));
+						if(q<0.5)
+							pref=(float) (Cr*q*(Math.cos(q*12.56)/4+0.75));
+						else
+							pref=(float) (Cr*q);*/					
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+					}		
+				}
+				//context.write(new Text(contents[6]), new DoubleWritable(1));
+			}
+		}
+	}
+
+}
+class TMapper_std_0 extends Mapper<Object, Text,Text,DoubleWritable>{
+
+	//public static double total;
+	@Override
+	protected void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
+			
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
+				
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>=0.1){
+						Float pref=(float) (Math.log(ti)/Math.log(30)*q*(Math.cos(q*3.14)/2+0.5));
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+					}		
+				}
+				//context.write(new Text(contents[6]), new DoubleWritable(1));
+			}
+		}
+	}
+
+}
+
+class TMapper_origin extends Mapper<Object, Text,Text,DoubleWritable>{
+
+	//public static double total;
+	@Override
+	protected void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
+			
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
+				
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>=0.1){								
+						Float pref=q;
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+					}			
+				}
+				//context.write(new Text(contents[6]), new DoubleWritable(1));
+			}
+		}
+	}
+}
+
+class TMapper_LR extends Mapper<Object, Text,Text,DoubleWritable>{
+
+	//public static double total;
+	@Override
+	protected void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
+			
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
+				
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>=0.1){
+						Float pref=0f;
+						if(q<0.9)
+							pref=(float)(/*Math.log(ti)/Math.log(30)**/q*(10.475-24.55*q+18.05*q*q));
+						else
+							pref=q;
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+					}		
+				}
+				//context.write(new Text(contents[6]), new DoubleWritable(1));
+			}
+		}
+	}
+
+}
+
+
+class TMapper_LR_2 extends Mapper<Object, Text,Text,DoubleWritable>{
+
+	//public static double total;
+	@Override
+	protected void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
+			
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
+				
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>=0.45){
+						Float pref=0f;
+						if(q>=0.68)
+							pref=(float)(/*Math.log(ti)/Math.log(30)**/q*(9.348-24.55*q+18.05*q*q));
+						else
+							pref=(float)(/*Math.log(ti)/Math.log(30)**/q*(24.55*q-18.05*q*q-7.348));
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
 					}
-					//context.write(new Text(contents[6]), new DoubleWritable(1));
+					else if(q>0.1){
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(q));
+					}
 				}
 			}
+		}
 	}
-	
-	static boolean isNumeric(String str){
-		Pattern pattern= Pattern.compile("[0-9]*");
-		return pattern.matcher(str).matches();
-	}
-		
 }
+
+
+class TMapper_LR_line extends Mapper<Object, Text,Text,DoubleWritable>{
+
+	//public static double total;
+	@Override
+	protected void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
+			
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
+				
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>0.1){
+						Float pref=0f;
+						pref=(float) (q*1.47);
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(pref));
+					}
+				}
+			}
+		}
+	}
+}
+class TMapper_imp extends Mapper<Object, Text,Text,DoubleWritable>{
+
+	//public static double total;
+	@Override
+	protected void map(Object key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line=value.toString();
+		if(line.length()>10){
+			String [] contents=line.split("\t");
+			String date=contents[0];
+			String type=contents[1];
+			String Iid=contents[2];
+			//context.write(new Text(lines[i].split("\t")[0]),new IntWritable(1));
+			if(Iid.contains("_")){
+				Iid=Iid.substring(0,Iid.lastIndexOf("_"));
+			}
+			
+			if(Iid.length()>19)
+				Iid=Iid.substring(Iid.length()-10, Iid.length());
+				
+			//筛选数据
+			if(!type.equals("0")&&Iid.length()>0&&!Iid.equals("00000")&&contents.length>6&&ImplicitScore.isNumeric(Iid)){
+				String time_item=contents[6],time_watched=contents[7];
+				if(ImplicitScore.isNumeric(time_item)&&ImplicitScore.isNumeric(time_watched)){
+					//tw观看时长,ti节目时长,q观看质量
+					float ti=Float.parseFloat(time_item),tw=Float.parseFloat(time_watched),q=tw/ti;
+					if(q>=0.1){
+						context.write(new Text(ImplicitScore.testName+","+Iid),new DoubleWritable(0));
+					}		
+				}
+				//context.write(new Text(contents[6]), new DoubleWritable(1));
+			}
+		}
+	}
+
+}
+

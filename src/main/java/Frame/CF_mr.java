@@ -18,29 +18,51 @@ public class CF_mr {
 		String recommend_fm,eval;
 		
 		try {
-			for(int i=200;i<=1000;i+=200){
+			for(int i=200;i<=1200;i+=200){
 				
-				System.out.println("--std|scale:"+i+"------------------");
-				trainSet=HDFS+"/CollaborativeFilter/a/scale-"+i+"/trainSet-std";
-				example=HDFS+"/CollaborativeFilter/a/scale-"+i+"/example-std";
-				recommend=HDFS+"/CollaborativeFilter/a/scale-"+i+"/recommend-std";
-				tmp=HDFS+"/CollaborativeFilter/a/scale-"+i+"/tmp/std/";
+				/*System.out.println("--std|scale:"+i+"------------------");
+				trainSet=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/trainSet-std";
+				example=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/example-std";
+				recommend=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-std";
+				tmp=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/tmp/std/";
 				CFtest.recommend(conf, trainSet, recommend, tmp, 10);
 				
-				recommend_fm=HDFS+"/CollaborativeFilter/a/scale-"+i+"/recommend-fm-std";
-				eval=HDFS+"/CollaborativeFilter/a/scale-"+i+"/eval-std";
+				recommend_fm=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-fm-std";
+				eval=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/eval-std";
 				DataAnalyse.analyse(conf, recommend+"/part-r-00000", recommend_fm, example, eval);
 				
 				////////////////////////////////////////////////////////////////////////
-				System.out.println("--one|scale:"+i+"------------------");
-				trainSet=HDFS+"/CollaborativeFilter/a/scale-"+i+"/trainSet-one";
-				example=HDFS+"/CollaborativeFilter/a/scale-"+i+"/example-one";
-				recommend=HDFS+"/CollaborativeFilter/a/scale-"+i+"/recommend-one";
-				tmp=HDFS+"/CollaborativeFilter/a/scale-"+i+"/tmp/one/";
+				System.out.println("--LR|scale:"+i+"------------------");
+				trainSet=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/trainSet-newLR";
+				example=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/example-newLR";
+				recommend=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-newLR";
+				tmp=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/tmp/newLR/";
 				CFtest.recommend(conf, trainSet, recommend, tmp, 10);
 				
-				recommend_fm=HDFS+"/CollaborativeFilter/a/scale-"+i+"/recommend-fm-ones";
-				eval=HDFS+"/CollaborativeFilter/a/scale-"+i+"/eval-ones";
+				recommend_fm=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-fm-newLR";
+				eval=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/eval-newLR";
+				DataAnalyse.analyse(conf, recommend+"/part-r-00000", recommend_fm, example, eval);*/
+				////////////////////////////////
+				System.out.println("--origin|scale:"+i+"------------------");
+				trainSet=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/trainSet-origin";
+				example=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/example-origin";
+				recommend=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-origin";
+				tmp=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/tmp/origin/";
+				CFtest.recommend(conf, trainSet, recommend, tmp, 10);
+				
+				recommend_fm=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-fm-origin";
+				eval=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/eval-origin";
+				DataAnalyse.analyse(conf, recommend+"/part-r-00000", recommend_fm, example, eval);
+				//////////////////////////////////////////////
+				System.out.println("--newLR|scale:"+i+"------------------");
+				trainSet=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/trainSet-newLR";
+				example=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/example-newLR";
+				recommend=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-newLR";
+				tmp=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/tmp/origin-part/";
+				CFtest.recommend(conf, trainSet, recommend, tmp, 10);
+				
+				recommend_fm=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/recommend-fm-newLR";
+				eval=HDFS+"/CollaborativeFilter/6levels/scale-"+i+"/re-mr/eval-newLR";
 				DataAnalyse.analyse(conf, recommend+"/part-r-00000", recommend_fm, example, eval);
 				
 			
