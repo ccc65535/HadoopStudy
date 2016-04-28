@@ -9,7 +9,7 @@ import org.apache.hadoop.fs.*;
 public class HDFSProcess {
 	
 	//public static String HDFS="hdfs://202.113.127.209:9000/";
-	public static String HDFS="hdfs://192.168.32.10:9000/";
+	public static String HDFS="hdfs://202.113.127.208:9000/";
 	
 	
 	

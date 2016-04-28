@@ -11,7 +11,7 @@ public class DataAnalyse {
 	public static void main(String args[]){
 		ResultFormation resFormation=new ResultFormation();
 		Evaluate eval=new Evaluate();
-		String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
+		String HDFS="hdfs://202.113.127.208:9000/RecommendSystem/";
 		Configuration conf=new Configuration();
 		conf.addResource(new Path("./bin/core-site.xml"));
 		conf.addResource(new Path("./bin/hdfs-site.xml"));

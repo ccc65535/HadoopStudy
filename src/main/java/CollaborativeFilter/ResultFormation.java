@@ -85,7 +85,7 @@ public class ResultFormation {
 			/*rf.inPath="/project/data/cluster/part-r-00000";
 			rf.outPath="/project/data/cluster/final";
 			rf.formation();*/
-			String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
+			String HDFS="hdfs://202.113.127.208:9000/RecommendSystem/";
 			rf.inPath=HDFS+"/CF/imp/output/part-r-00000";
 			rf.outPath=HDFS+"/CF/final";
 			

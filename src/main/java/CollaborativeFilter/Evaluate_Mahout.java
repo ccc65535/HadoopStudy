@@ -25,14 +25,39 @@ public class Evaluate_Mahout {
         // TODO Auto-generated method stub  
 
 	  	//String inputPath="/home/hadoop/Desktop/files/400/result-origin";
-		for(int i=1200;i<=1200;i+=200){
-			String inputPath="/home/hadoop/Desktop/files/"+i+"/result-origin";
-			System.out.println("Level:"+i+",origin.");
-			value(inputPath);
-			inputPath="/home/hadoop/Desktop/files/"+i+"/result-newLR";
-			System.out.println("Level:"+i+",newLR.");
+		for(int i=200;i<=1200;i+=200){
+			String inputPath="";
+			
+			/*inputPath="/home/Hadoop/桌面/files/"+i+"/result-std-logSize";
+			System.out.println("Level:"+i+",std-LogSize:");
+			value(inputPath);*/
+			/*inputPath="/home/Hadoop/桌面/files/"+i+"/result-origin";
+			System.out.println("origin:");
+			value(inputPath);*/
+			
+			inputPath="/home/Hadoop/桌面/files/"+i+"/result-mixedTime-test1";
+			System.out.println("level"+i+", mixedTime:");
 			value(inputPath);
 			System.out.println();
+			
+			
+			/*inputPath="/home/Hadoop/桌面/files/"+i+"/result-std-0";
+			System.out.println("std-0:");
+			value(inputPath);
+			System.out.println();
+			
+			inputPath="/home/Hadoop/桌面/files/"+i+"/result-std";
+			System.out.println("Level:"+i+",std:");
+			value(inputPath);
+			
+			inputPath="/home/Hadoop/桌面/files/"+i+"/result-square";
+			System.out.println("Level:"+i+",square:");
+			value(inputPath);
+			
+			inputPath="/home/Hadoop/桌面/files/"+i+"/result-line";
+			System.out.println("Level:"+i+",line:");
+			value(inputPath);
+			*/
 			
 		}
          

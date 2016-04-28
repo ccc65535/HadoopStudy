@@ -42,11 +42,11 @@ public class SimilarityTest {
 	public static void main(String args[]){
 		try
 		{
-			FileDataModel model=new FileDataModel(new File("/home/hadoop/Desktop/200/result-imp"));
+			FileDataModel model=new FileDataModel(new File("/home/Hadoop/桌面/files/200/result-origin"));
 			
-			//PearsonCorrelationSimilarity similarity1=new PearsonCorrelationSimilarity(model);
-			//AdjustedCosineSimilarity similarity2=new AdjustedCosineSimilarity(model);
-			//UncenteredCosineSimilarity similarity3=new UncenteredCosineSimilarity(model);
+			PearsonCorrelationSimilarity similarity1=new PearsonCorrelationSimilarity(model);
+			AdjustedCosineSimilarity similarity2=new AdjustedCosineSimilarity(model);
+			UncenteredCosineSimilarity similarity3=new UncenteredCosineSimilarity(model);
 			
 			
 			/*BufferedWriter fout1=new BufferedWriter(new FileWriter("./dataFiles/5users/user-PearsonCorrelationSimilarity.txt"));
@@ -100,8 +100,8 @@ public class SimilarityTest {
 			 
 			 
 
-			// UserNeighborhood nbh = new NearestNUserNeighborhood(5, similarity1, model);
-			// Recommender rec1 = new GenericUserBasedRecommender(model, nbh, similarity1);  
+			 UserNeighborhood nbh = new NearestNUserNeighborhood(10, similarity1, model);
+			 Recommender rec1 = new GenericUserBasedRecommender(model, nbh, similarity1);  
 			 LongPrimitiveIterator list=model.getUserIDs();
 			 Long user;
 			 
@@ -135,14 +135,14 @@ public class SimilarityTest {
 			 out1.close();*/
 			 
 			 
-			 //Recommender rec2 = new GenericItemBasedRecommender(model, similarity3);  
-			 Recommender rec2 = new SVDRecommender(model,new SVDPlusPlusFactorizer(model,10,5));
+			 Recommender rec2 = new GenericItemBasedRecommender(model, similarity2);  
+			 //Recommender rec2 = new SVDRecommender(model,new SVDPlusPlusFactorizer(model,10,5));
 			 list=model.getUserIDs();
-			 //BufferedWriter out2=new BufferedWriter(new FileWriter("./dataFiles/mathTest/itemBasedRecommend.txt"));
-			 BufferedWriter out2=new BufferedWriter(new FileWriter("/home/hadoop/Desktop/200/Recommend-svd-imp.txt"));
+			 BufferedWriter out2=new BufferedWriter(new FileWriter("/home/Hadoop/桌面/files/200/Recommend1.txt"));
+			// BufferedWriter out2=new BufferedWriter(new FileWriter("/home/hadoop/Desktop/200/Recommend-svd-imp.txt"));
 			 while(list.hasNext()){
 				 user=list.next();
-				 List<RecommendedItem> recItemList = rec2.recommend(user,10);
+				 List<RecommendedItem> recItemList = rec1.recommend(user,10);
 				 int n=0;
 				 String line="";
 				 //System.out.print(user+"\t");

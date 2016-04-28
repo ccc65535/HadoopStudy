@@ -8,7 +8,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 public class ScoreRegulation {
-	//public static String HDFS="hdfs://192.168.32.10:9000";
+	//public static String HDFS="hdfs://202.113.127.208:9000";
 	public static String rootPath;
 	//public static String outPath="/RecommendSystem/valuePref/output-regulation/";
 	public static String outPath;
@@ -310,13 +310,17 @@ public class ScoreRegulation {
 				BufferedReader reader2=new BufferedReader(new InputStreamReader(in2));
 				line="";
 				while((line=reader2.readLine())!=null){
-						score=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
-					if(score>0.5){
-						line=line.substring(0,line.lastIndexOf(',')+1);
-						line+=score;
-						writer.write(line);
-						writer.newLine();
-					}
+					score=Double.parseDouble(line.substring(line.lastIndexOf(',')+1));
+					//score=score*(0.935-2.46*score+1.8*score*score);
+					/*if(score>0.68)
+						score=8.348-24.55*score+18.05*score*score;
+					else
+						score=-8.348+24.55*score-18.05*score*score;*/
+					
+					line=line.substring(0,line.lastIndexOf(',')+1);
+					line+=score;
+					writer.write(line);
+					writer.newLine();
 
 					
 				}

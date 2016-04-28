@@ -19,7 +19,7 @@
 <configuration>
 <property>
 	<name>fs.defaultFS</name>
-		<value>hdfs://192.168.32.10:9000</value>
+		<value>hdfs://202.113.127.208:9000</value>
 		<final>true</final>
 	</property>
 	<property>

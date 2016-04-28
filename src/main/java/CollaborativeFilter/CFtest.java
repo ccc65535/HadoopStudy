@@ -6,7 +6,7 @@ import org.apache.mahout.cf.taste.hadoop.item.RecommenderJob;
 import Frame.DataAnalyse;
 
 public class CFtest {
-	private static final String HDFS = "hdfs://192.168.32.10:9000";
+	private static final String HDFS = "hdfs://202.113.127.208:9000";
 	public static void main(String[] args) throws Exception {
 		/*String inPath = HDFS + "/RecommendSystem/CF/imp/in/trainSet-2.txt";
 	    String inFile = inPath + "";	    

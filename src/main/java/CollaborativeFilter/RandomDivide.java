@@ -388,7 +388,7 @@ public class RandomDivide {
 			rd.trainSetPath="/project/data/nzz/trainSet-1.txt";
 			rd.examplePath="/project/data/nzz/example.txt";
 			rd.divide1();*/
-			String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/";
+			String HDFS="hdfs://202.113.127.208:9000/RecommendSystem/";
 			rd.inPath=HDFS+"/valuePref-new2/result-alpha";
 			rd.trainSetPath=HDFS+"/trainSet.txt";
 			rd.examplePath=HDFS+"/example.txt";

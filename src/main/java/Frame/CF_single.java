@@ -7,7 +7,7 @@ import CollaborativeFilter.CFtest;
 import CollaborativeFilter.SimilarityTest;
 
 public class CF_single {
-public static String HDFS="hdfs://192.168.32.10:9000/RecommendSystem/beta-1";
+public static String HDFS="hdfs://202.113.127.208:9000/RecommendSystem/beta-1";
 	
 	public static void main(String args[]){
 		Configuration conf = new Configuration();
